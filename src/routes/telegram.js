@@ -5,9 +5,7 @@ const routes = express.Router();
 
 const apiRoutes = (app) => {
 
-  return app.use("/api/v1/", routes);
-}
+  routes.get("/userPage", homeController.handleUserPage);
+  return app.use("/api/v2/", routes);
+};
 export default apiRoutes;
-
-
-

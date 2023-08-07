@@ -1,17 +1,23 @@
 import express from 'express';
-import initWebRoutes from './routes/web';
-import configViewEngine from './configs/viewEngine';
+import bodyParser from "body-parser";
+const fileUpload = require('express-fileupload');
+import apiRoutes from "./routes/api";
+import telegram from './controller/telegramController.js';
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 
-//configs view engine
-configViewEngine(app);
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
-//init web initWebRoutes
-initWebRoutes(app);
+app.use(fileUpload());
 
-const PORT = process.env.PORT || 8080;
+telegram(app);
+
+apiRoutes(app);
+
+const PORT = process.env.PORT || 8082;
 app.listen(PORT, () => {
-    console.log('jwt nodejs and react ' + PORT);
+  console.log('jwt nodejs and react ' + PORT);
 });
