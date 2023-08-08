@@ -11,61 +11,94 @@ require("dotenv").config();
 const botTelegram = async (app) => {
   let isFetchingData = true;
   const bot = new Telegraf(process.env.BOT_TOKEN_LIVE);
-
+  const arrTemp = [];
+  let filterItemChange = [];
   if (isFetchingData) {
     isFetchingData = false;
     // Công việc cron mỗi 5 giây
-    await cron.schedule("20 */3 * * * *", async () => {
+    await cron.schedule("*/3 * * * *", async () => {
       try {
         const data = await botTelegramService.getNewImage();
         if (data?.EC == 0 && data?.DT.length > 0) {
-          for (const e of data?.DT) {
-            console.log("check e?.linkData", e?.linkData);
-            const imageFilePaths = e?.linkData?.map((image) =>
-              path.join(constant.netWorkPath, image.LinkHA)
+          if (arrTemp.length) {
+            filterItemChange = data?.DT.filter(
+              (itemB) =>
+                !arrTemp.some((itemA) => itemA?.SessionId === itemB.SessionId)
             );
-            imageFilePaths?.unshift(
-              path.join(constant.netWorkPath, e.srcAvatar)
-            );
-            console.log("check_imageFilePaths", imageFilePaths);
-            // Đường dẫn tới các tệp ảnh con
-            const mediaGroup = imageFilePaths
-              .map((filePath) => {
-                if (fs.existsSync(filePath))
-                  return {
-                    type: "photo",
-                    media: { source: fs.readFileSync(filePath) },
-                  };
-              })
-              .filter((e) => e != undefined);
-            console.log("check mediaGroup", mediaGroup);
-            if (mediaGroup.length > 0) {
-              let textNoti = `\n\n<b>----------------------------------------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
-                e?.MaDK
-              }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
-                e?.HotenHV
-              }</b>\n<i>Biển Số:</i> <b>${
-                e?.BienSo
-              }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${
-                e?.HotenGV
-              }</b>\n<i>Thời gian gửi dữ liệu:</i><b>${
-                e?.TimeSendCenter
-                  ? moment(e.TimeSendCenter)
-                      .utcOffset("+0000")
-                      .format(constant.outputFormat)
-                  : ""
-              }</b>\n\n`;
-              await bot.telegram
-                .sendMessage(process.env.id_groupLiveStream, textNoti, {
-                  parse_mode: "HTML",
+            arrTemp.length = 0;
+            Array.prototype.push.apply(arrTemp, data?.DT);
+          } else {
+            filterItemChange = data?.DT;
+            Array.prototype.push.apply(arrTemp, data?.DT);
+          }
+          if (filterItemChange.length) {
+            for (const e of filterItemChange) {
+              console.log("check e?.linkData", e?.linkData);
+              const imageFilePaths = e?.linkData?.map((image) =>
+                path.join(constant.netWorkPath, image.LinkHA)
+              );
+              imageFilePaths?.unshift(
+                path.join(constant.netWorkPath, e.srcAvatar)
+              );
+              console.log("check_imageFilePaths", imageFilePaths);
+              // Đường dẫn tới các tệp ảnh con
+              const mediaGroup = imageFilePaths
+                .map((filePath) => {
+                  if (fs.existsSync(filePath))
+                    return {
+                      type: "photo",
+                      media: { source: fs.readFileSync(filePath) },
+                    };
                 })
-                .then(async () => {
-                  await bot.telegram.sendMediaGroup(
-                    process.env.id_groupLiveStream,
-                    mediaGroup
-                  );
-                });
-              await helpers.sleep(15);
+                .filter((e) => !(e == undefined));
+              console.log("check mediaGroup", mediaGroup);
+              if (mediaGroup.length > 0) {
+                let textNoti = `\n\n<b>-----------------------------------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
+                  e?.MaDK
+                }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
+                  e?.HotenHV
+                }</b>\n<i>Biển Số:</i> <b>${
+                  e?.BienSo
+                }</b>
+                \n<i>Họ Tên Giáo Viên:</i> <b>${e?.HotenGV}</b>
+                \n<i>Tổng QĐ:</i> <b>${
+                  e?.TongQuangDuong
+                    ? parseFloat(e.TongQuangDuong).toFixed(2)
+                    : ""
+                } Km</b>
+                \n<i>Tổng Thời Gian:</i> <b>${
+                  e?.TongThoiGian ? parseFloat(e.TongThoiGian).toFixed(2) : ""
+                } Giờ</b>
+                \n<i>Thời điểm ĐN:</i><b>${
+                  e?.ThoiDiemDangNhap
+                    ? moment(e.ThoiDiemDangNhap)
+                        .utcOffset("+0000")
+                        .format(constant.outputFormat)
+                    : ""
+                }</b>
+                \n<i>Thời điểm ĐX:</i><b>${
+                  e?.ThoiDiemDangXuat
+                    ? moment(e.ThoiDiemDangXuat)
+                        .utcOffset("+0000")
+                        .format(constant.outputFormat)
+                    : ""
+                }</b>\n\n`;
+                const pr1 = await bot.telegram
+                  .sendMessage(process.env.id_groupLiveStream, textNoti, {
+                    parse_mode: "HTML",
+                  })
+                  .then(async () => {
+                    await helpers.sleep(1.5);
+                    await bot.telegram.sendMediaGroup(
+                      process.env.id_groupLiveStream,
+                      mediaGroup
+                    );
+                  });
+                const pr2 = await helpers.sleep(20);
+                await Promise.all([pr1, pr2]);
+              } else {
+                console.log("Chưa phát hiện phiên mới");
+              }
             }
           }
         }

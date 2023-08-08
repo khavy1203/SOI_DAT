@@ -20,11 +20,13 @@ const getNewImage = async () => {
 
     // Truy vấn dữ liệu
     const result =
-      await request.query(`select  top (10) ht.MaDK, hv.srcAvatar, dbo.GetEcoString(hv.HoTen) as HotenHV, dbo.GetEcoString(gv.HoTen) as HotenGV, ht.BienSo, TimeSendCenter,  ht.SessionId from HanhTrinhTuEtm ht
-	  left join HocVienTH hv on hv.MaDK = ht.MaDK
-	  left join KhoaHoc kh on  kh.ID = hv.IDKhoaHoc 
-	  left join GiaoVienTH gv on gv.MaGV = ht.IDGV
-	  order by TimeSendCenter desc`);
+      await request.query(`select  top (10) ht.MaDK, hv.srcAvatar, dbo.GetEcoString(hv.HoTen) as HotenHV, dbo.GetEcoString(gv.HoTen) as HotenGV, ht.BienSo, TimeSendCenter, ht.ThoiDiemDangNhap, ht.ThoiDiemDangXuat, dbo.GetEcoString(ht.TongQuangDuong) as TongQuangDuong , cast (dbo.GetEcoString(ht.TongThoiGian) as float)/3600 as TongThoiGian ,  ht.SessionId 
+      from HanhTrinhTuEtm ht
+          left join HocVienTH hv on hv.MaDK = ht.MaDK
+          left join KhoaHoc kh on  kh.ID = hv.IDKhoaHoc 
+          left join GiaoVienTH gv on gv.MaGV = ht.IDGV
+      where ht.CenterResponseCode = 1
+      order by TimeSendCenter desc`);
 
     // Xử lý kết quả truy vấn tại đây
     // Đóng kết nối
