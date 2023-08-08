@@ -25,7 +25,6 @@ const getNewImage = async () => {
           left join HocVienTH hv on hv.MaDK = ht.MaDK
           left join KhoaHoc kh on  kh.ID = hv.IDKhoaHoc 
           left join GiaoVienTH gv on gv.MaGV = ht.IDGV
-      where ht.CenterResponseCode = 1
       order by TimeSendCenter desc`);
 
     // Xử lý kết quả truy vấn tại đây
