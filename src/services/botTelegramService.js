@@ -178,7 +178,7 @@ const getAllImageFromNumberCar = async (car, date) => {
           left join HocVienTH hv on hv.MaDK = ht.MaDK
           left join KhoaHoc kh on  kh.ID = hv.IDKhoaHoc 
           left join GiaoVienTH gv on gv.MaGV = ht.IDGV
-      where  ht.BienSo = '${car}' and TimeSendCenter > '${date}'
+      where  ht.BienSo = '${car}' and CAST (TimeSendCenter AS DATE) = '${date}'
       order by TimeSendCenter desc`);
 
     // Xử lý kết quả truy vấn tại đây

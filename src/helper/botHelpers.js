@@ -23,6 +23,7 @@ function checkValueType(value) {
 function checkOutTime(startTime){
   return performance.now()-startTime >80000;
 }
+
 module.exports = {
   isNumberString,
   sleep,
