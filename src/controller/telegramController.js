@@ -33,7 +33,7 @@ const botTelegram = async (app) => {
           }
           if (filterItemChange.length) {
             for (const e of filterItemChange) {
-              console.log("check e?.linkData", e?.linkData);
+              if(constant.numberCarIgnoreCheck.includes(e.BienSo)) continue;
               const imageFilePaths = e?.linkData?.map((image) =>
                 path.join(constant.netWorkPath, image.LinkHA)
               );
@@ -53,13 +53,15 @@ const botTelegram = async (app) => {
                 .filter((e) => !(e == undefined));
               console.log("check mediaGroup", mediaGroup);
               if (mediaGroup.length > 0) {
-                let textNoti = `\n\n<b>-----------------------------------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
+                let textNoti = `\n\n<b>----------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
                   e?.MaDK
                 }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
                   e?.HotenHV
                 }</b>\n<i>Biển Số:</i> <b>${
                   e?.BienSo
-                }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${e?.HotenGV}</b>\n<i>Tổng QĐ:</i> <b>${
+                }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${
+                  e?.HotenGV
+                }</b>\n<i>Tổng QĐ:</i> <b>${
                   e?.TongQuangDuong
                     ? parseFloat(e.TongQuangDuong).toFixed(2)
                     : ""
@@ -100,6 +102,12 @@ const botTelegram = async (app) => {
       } catch (error) {
         console.log("check error", error);
       }
+    });
+
+    // Cron job chạy vào lúc 17:30 mỗi ngày
+    await cron.schedule("30 17 * * *", async () => {
+      console.log("Cron job executed at 17:30 (5:30 PM) every day.");
+      //Điểm danh
     });
     isFetchingData = true;
   }
@@ -154,6 +162,125 @@ const botTelegram = async (app) => {
         await ctx.reply(
           "Lỗi server bot, hãy liên hệ Khả Vy để được fix sớm nhất"
         );
+        isFetchingData = true;
+        return;
+      }
+    });
+
+    bot.command("hinhanh", async (ctx) => {
+      try {
+        const startTime = performance.now();
+        if (isFetchingData) {
+          isFetchingData = false;
+          console.log("DAT detected", ctx);
+          let input = ctx.message.text.split(" ");
+          input.shift();
+          const car = input[0] ? input[0].trim() : "";
+          const date = input[1]
+            ? input[1].trim()
+            : moment().format("YYYY-MM-DD");
+
+          console.log("car", car);
+          if (!car) {
+            await ctx.reply(helpMessage);
+            isFetchingData = true;
+            return;
+          }
+
+          const lstImage = await botTelegramService.getAllImageFromNumberCar(
+            car,
+            date
+          );
+          if (lstImage?.DT?.length > 0) {
+            for (const e of lstImage.DT) {
+              console.log("check e?.linkData", e?.linkData);
+              const imageFilePaths = e?.linkData?.map((image) => {
+                if (image) return path.join(constant.netWorkPath, image.LinkHA);
+              });
+              imageFilePaths?.unshift(
+                path.join(constant.netWorkPath, e?.srcAvatar)
+              );
+              console.log("check_imageFilePaths", imageFilePaths);
+              // Đường dẫn tới các tệp ảnh con
+              const mediaGroup = imageFilePaths
+                .map((filePath) => {
+                  if (fs.existsSync(filePath))
+                    return {
+                      type: "photo",
+                      media: { source: fs.readFileSync(filePath) },
+                      caption: `https://${filePath
+                        .slice(2, filePath.length)
+                        .replace(/\\/g, ".")}.com`,
+                    };
+                })
+                .filter((e) => e !== null && e !== undefined);
+              console.log("check mediaGroup", mediaGroup);
+              if (mediaGroup.length > 0) {
+                let textNoti = `\n\n<b>----------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
+                  e?.MaDK
+                }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
+                  e?.HotenHV
+                }</b>\n<i>Biển Số:</i> <b>${
+                  e?.BienSo
+                }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${
+                  e?.HotenGV
+                }</b>\n<i>Tổng QĐ:</i> <b>${
+                  e?.TongQuangDuong
+                    ? parseFloat(e.TongQuangDuong).toFixed(2)
+                    : ""
+                } Km</b>\n<i>Tổng Thời Gian:</i> <b>${
+                  e?.TongThoiGian ? parseFloat(e.TongThoiGian).toFixed(2) : ""
+                } Giờ</b>\n<i>Thời điểm ĐN: </i><b>${
+                  e?.ThoiDiemDangNhap
+                    ? moment(e.ThoiDiemDangNhap)
+                        .utcOffset("+0000")
+                        .format(constant.outputFormat)
+                    : ""
+                }</b>\n<i>Thời điểm ĐX: </i><b>${
+                  e?.ThoiDiemDangXuat
+                    ? moment(e.ThoiDiemDangXuat)
+                        .utcOffset("+0000")
+                        .format(constant.outputFormat)
+                    : ""
+                }</b>\n\n`;
+                if (helpers.checkOutTime(startTime)) {
+                  isFetchingData = true;
+                  return; // Dừng tác vụ
+                }
+                const prAll = await ctx.reply(textNoti, {
+                  parse_mode: "HTML",
+                });
+
+                if (mediaGroup.length > 10) {
+                  for (let i = 0; i < mediaGroup.length; i += 10) {
+                    let showGroup = mediaGroup.slice(i, i + 10);
+                    const pr2 = await ctx.replyWithMediaGroup(showGroup);
+                    const pr4 = await helpers.sleep(1.5);
+                    await Promise.all([pr2, pr4]);
+                    if (helpers.checkOutTime(startTime)) {
+                      isFetchingData = true;
+                      return;
+                    } // Dừng tác vụ
+                  }
+                } else {
+                  const pr3 = await ctx.replyWithMediaGroup(mediaGroup);
+                  const pr5 = await helpers.sleep(1.5);
+                  await Promise.all([pr3, pr5]);
+                  if (helpers.checkOutTime(startTime)) {
+                    isFetchingData = true;
+                    return;
+                  } // Dừng tác vụ
+                }
+                await Promise.all([prAll]);
+              } 
+            }
+          }
+        }
+        isFetchingData = true;
+        return; // Dừng tác vụ
+      } catch (e) {
+        console.log("check err", e);
+        await ctx.reply("Vui lòng thử lại sau !!!");
         isFetchingData = true;
         return;
       }

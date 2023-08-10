@@ -5,7 +5,7 @@ function isNumberString(str) {
 }
 
 async function sleep(number) {
-  return new Promise((resolve) => {
+  return await new Promise(async(resolve) => {
     setTimeout(() => {
       resolve();
     }, number * 1000);
@@ -20,8 +20,12 @@ function checkValueType(value) {
   }
 }
 
+function checkOutTime(startTime){
+  return performance.now()-startTime >80000;
+}
 module.exports = {
   isNumberString,
   sleep,
-  checkValueType
+  checkValueType,
+  checkOutTime
 };

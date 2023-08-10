@@ -241,6 +241,11 @@ const colExcel = {
 }
 const outputFormat = "DD/MM/YYYY HH[h]mm[p]";
 
+const numberCarIgnoreCheck = [
+  '77A00415',
+  '77C22110'
+]
+
 module.exports = {
   listCourseOld,
   config,
@@ -252,5 +257,6 @@ module.exports = {
   formInDat,
   netWorkPath,
   colExcel,
-  outputFormat
+  outputFormat,
+  numberCarIgnoreCheck
 };
