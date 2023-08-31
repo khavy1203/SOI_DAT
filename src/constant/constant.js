@@ -246,6 +246,10 @@ const numberCarIgnoreCheck = [
   '77A00521'
 ]
 
+const studentIgnoreCheck = [
+  '52001-20230311-131944'
+]
+
 module.exports = {
   listCourseOld,
   config,
@@ -258,5 +262,6 @@ module.exports = {
   netWorkPath,
   colExcel,
   outputFormat,
-  numberCarIgnoreCheck
+  numberCarIgnoreCheck,
+  studentIgnoreCheck
 };

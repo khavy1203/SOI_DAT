@@ -33,7 +33,7 @@ const botTelegram = async (app) => {
           }
           if (filterItemChange.length) {
             for (const e of filterItemChange) {
-              if(constant.numberCarIgnoreCheck.includes(e?.BienSo)) continue;
+              if(constant.numberCarIgnoreCheck.includes(e?.BienSo) || constant.studentIgnoreCheck.includes(e?.MaDK) ) continue;
               const imageFilePaths = e?.linkData?.map((image) =>
                 path.join(constant.netWorkPath, image.LinkHA)
               );
