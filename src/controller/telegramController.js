@@ -175,7 +175,7 @@ const botTelegram = async (app) => {
           console.log("DAT detected", ctx);
           let input = ctx.message.text.split(" ");
           input.shift();
-          const car = input[0] ? input[0].trim() : "";
+          const car = input[0] ? input[0].trim().toLocaleUpperCase() : "";
           const date = input[1]
             ? input[1].trim()
             : moment().format("YYYY-MM-DD");
