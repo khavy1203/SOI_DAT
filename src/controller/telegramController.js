@@ -16,93 +16,93 @@ const botTelegram = async (app) => {
   if (isFetchingData) {
     isFetchingData = false;
     // Công việc cron mỗi 5 giây
-    // await cron.schedule("*/3 * * * *", async () => {
-    //   try {
-    //     const data = await botTelegramService.getNewImage();
-    //     if (data?.EC == 0 && data?.DT.length > 0) {
-    //       if (arrTemp.length) {
-    //         filterItemChange = data?.DT.filter(
-    //           (itemB) =>
-    //             !arrTemp.some((itemA) => itemA?.SessionId === itemB.SessionId)
-    //         );
-    //         arrTemp.length = 0;
-    //         Array.prototype.push.apply(arrTemp, data?.DT);
-    //       } else {
-    //         filterItemChange = data?.DT;
-    //         Array.prototype.push.apply(arrTemp, data?.DT);
-    //       }
-    //       if (filterItemChange.length) {
-    //         for (const e of filterItemChange) {
-    //           if(constant.numberCarIgnoreCheck.includes(e.BienSo)) continue;
-    //           const imageFilePaths = e?.linkData?.map((image) =>
-    //             path.join(constant.netWorkPath, image.LinkHA)
-    //           );
-    //           imageFilePaths?.unshift(
-    //             path.join(constant.netWorkPath, e.srcAvatar)
-    //           );
-    //           console.log("check_imageFilePaths", imageFilePaths);
-    //           // Đường dẫn tới các tệp ảnh con
-    //           const mediaGroup = imageFilePaths
-    //             .map((filePath) => {
-    //               if (fs.existsSync(filePath))
-    //                 return {
-    //                   type: "photo",
-    //                   media: { source: fs.readFileSync(filePath) },
-    //                 };
-    //             })
-    //             .filter((e) => !(e == undefined));
-    //           console.log("check mediaGroup", mediaGroup);
-    //           if (mediaGroup.length > 0) {
-    //             let textNoti = `\n\n<b>----------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
-    //               e?.MaDK
-    //             }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
-    //               e?.HotenHV
-    //             }</b>\n<i>Biển Số:</i> <b>${
-    //               e?.BienSo
-    //             }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${
-    //               e?.HotenGV
-    //             }</b>\n<i>Tổng QĐ:</i> <b>${
-    //               e?.TongQuangDuong
-    //                 ? parseFloat(e.TongQuangDuong).toFixed(2)
-    //                 : ""
-    //             } Km</b>\n<i>Tổng Thời Gian:</i> <b>${
-    //               e?.TongThoiGian ? parseFloat(e.TongThoiGian).toFixed(2) : ""
-    //             } Giờ</b>\n<i>Thời điểm ĐN: </i><b>${
-    //               e?.ThoiDiemDangNhap
-    //                 ? moment(e.ThoiDiemDangNhap)
-    //                     .utcOffset("+0000")
-    //                     .format(constant.outputFormat)
-    //                 : ""
-    //             }</b>\n<i>Thời điểm ĐX: </i><b>${
-    //               e?.ThoiDiemDangXuat
-    //                 ? moment(e.ThoiDiemDangXuat)
-    //                     .utcOffset("+0000")
-    //                     .format(constant.outputFormat)
-    //                 : ""
-    //             }</b>\n\n`;
-    //             const pr1 = await bot.telegram
-    //               .sendMessage(process.env.id_groupLiveStream, textNoti, {
-    //                 parse_mode: "HTML",
-    //               })
-    //               .then(async () => {
-    //                 await helpers.sleep(1.5);
-    //                 await bot.telegram.sendMediaGroup(
-    //                   process.env.id_groupLiveStream,
-    //                   mediaGroup
-    //                 );
-    //               });
-    //             const pr2 = await helpers.sleep(20);
-    //             await Promise.all([pr1, pr2]);
-    //           } else {
-    //             console.log("Chưa phát hiện phiên mới");
-    //           }
-    //         }
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.log("check error", error);
-    //   }
-    // });
+    await cron.schedule("*/3 * * * *", async () => {
+      try {
+        const data = await botTelegramService.getNewImage();
+        if (data?.EC == 0 && data?.DT.length > 0) {
+          if (arrTemp.length) {
+            filterItemChange = data?.DT.filter(
+              (itemB) =>
+                !arrTemp.some((itemA) => itemA?.SessionId === itemB.SessionId)
+            );
+            arrTemp.length = 0;
+            Array.prototype.push.apply(arrTemp, data?.DT);
+          } else {
+            filterItemChange = data?.DT;
+            Array.prototype.push.apply(arrTemp, data?.DT);
+          }
+          if (filterItemChange.length) {
+            for (const e of filterItemChange) {
+              if(constant.numberCarIgnoreCheck.includes(e.BienSo)) continue;
+              const imageFilePaths = e?.linkData?.map((image) =>
+                path.join(constant.netWorkPath, image.LinkHA)
+              );
+              imageFilePaths?.unshift(
+                path.join(constant.netWorkPath, e.srcAvatar)
+              );
+              console.log("check_imageFilePaths", imageFilePaths);
+              // Đường dẫn tới các tệp ảnh con
+              const mediaGroup = imageFilePaths
+                .map((filePath) => {
+                  if (fs.existsSync(filePath))
+                    return {
+                      type: "photo",
+                      media: { source: fs.readFileSync(filePath) },
+                    };
+                })
+                .filter((e) => !(e == undefined));
+              console.log("check mediaGroup", mediaGroup);
+              if (mediaGroup.length > 0) {
+                let textNoti = `\n\n<b>----------------------------</b>\n\n<i>Mã học viên:</i><code style="color: red;"> <b style="color:red;">${
+                  e?.MaDK
+                }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
+                  e?.HotenHV
+                }</b>\n<i>Biển Số:</i> <b>${
+                  e?.BienSo
+                }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${
+                  e?.HotenGV
+                }</b>\n<i>Tổng QĐ:</i> <b>${
+                  e?.TongQuangDuong
+                    ? parseFloat(e.TongQuangDuong).toFixed(2)
+                    : ""
+                } Km</b>\n<i>Tổng Thời Gian:</i> <b>${
+                  e?.TongThoiGian ? parseFloat(e.TongThoiGian).toFixed(2) : ""
+                } Giờ</b>\n<i>Thời điểm ĐN: </i><b>${
+                  e?.ThoiDiemDangNhap
+                    ? moment(e.ThoiDiemDangNhap)
+                        .utcOffset("+0000")
+                        .format(constant.outputFormat)
+                    : ""
+                }</b>\n<i>Thời điểm ĐX: </i><b>${
+                  e?.ThoiDiemDangXuat
+                    ? moment(e.ThoiDiemDangXuat)
+                        .utcOffset("+0000")
+                        .format(constant.outputFormat)
+                    : ""
+                }</b>\n\n`;
+                const pr1 = await bot.telegram
+                  .sendMessage(process.env.id_groupLiveStream, textNoti, {
+                    parse_mode: "HTML",
+                  })
+                  .then(async () => {
+                    await helpers.sleep(1.5);
+                    await bot.telegram.sendMediaGroup(
+                      process.env.id_groupLiveStream,
+                      mediaGroup
+                    );
+                  });
+                const pr2 = await helpers.sleep(20);
+                await Promise.all([pr1, pr2]);
+              } else {
+                console.log("Chưa phát hiện phiên mới");
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.log("check error", error);
+      }
+    });
 
     // Cron job chạy vào lúc 17:30 mỗi ngày
     await cron.schedule("30 17 * * *", async () => {
@@ -175,7 +175,7 @@ const botTelegram = async (app) => {
           console.log("DAT detected", ctx);
           let input = ctx.message.text.split(" ");
           input.shift();
-          const car = input[0] ? input[0].trim().toUpperCase() : "";
+          const car = input[0] ? input[0].trim() : "";
           const date = input[1]
             ? input[1].trim()
             : moment().format("YYYY-MM-DD");
