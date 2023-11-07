@@ -33,7 +33,7 @@ const botTelegram = async (app) => {
           }
           if (filterItemChange.length) {
             for (const e of filterItemChange) {
-              if(constant.numberCarIgnoreCheck.includes(e.BienSo)) continue;
+              if (constant.numberCarIgnoreCheck.includes(e.BienSo)) continue;
               const imageFilePaths = e?.linkData?.map((image) =>
                 path.join(constant.netWorkPath, image.LinkHA)
               );
@@ -291,12 +291,13 @@ const botTelegram = async (app) => {
         if (isFetchingData) {
           isFetchingData = false;
           console.log("DAT detected", ctx);
-          let input = ctx.message.text.split(" ");
+          const input = ctx.message.text
+            .replace(/^\/\S+/, "")
+            .trim()
+            .split(" ");
           input.shift();
           const mhv = input[0] ? input[0].trim().toUpperCase() : "";
-          const date = input[1]
-            ? input[1].trim()
-            : null;
+          const date = input[1] ? input[1].trim() : null;
 
           console.log("mhv", mhv);
           if (!mhv) {

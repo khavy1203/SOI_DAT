@@ -242,12 +242,9 @@ const colExcel = {
 const outputFormat = "DD/MM/YYYY HH[h]mm[p]";
 
 const numberCarIgnoreCheck = [
-  '77A00415',
-  '77A00521'
 ]
 
 const studentIgnoreCheck = [
-  '52001-20230311-131944'
 ]
 
 module.exports = {
