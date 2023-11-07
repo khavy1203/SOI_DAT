@@ -113,6 +113,7 @@ const botTelegram = async (app) => {
   }
 
   const helpMessage = `
+      Vui lòng soạn đúng cú pháp
     `;
 
   const helpAdmin = `
@@ -295,9 +296,17 @@ const botTelegram = async (app) => {
             .replace(/^\/\S+/, "")
             .trim()
             .split(" ");
-          input.shift();
-          const mhv = input[0] ? input[0].trim().toUpperCase() : "";
-          const date = input[1] ? input[1].trim() : null;
+          if (!input) {
+            await ctx.reply(helpMessage);
+            isFetchingData = true;
+            return;
+          }
+          console.log("check input", input);
+          const mhv = input[0]?.trim().toUpperCase();
+          let date = null;
+          if (input.length > 0) {
+            date = input[1]?.trim();
+          }
 
           console.log("mhv", mhv);
           if (!mhv) {
@@ -404,6 +413,7 @@ const botTelegram = async (app) => {
         return;
       }
     });
+
     bot.command("help", async (ctx) => {
       if (isFetchingData) {
         isFetchingData = false;
