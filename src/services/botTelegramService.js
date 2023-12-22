@@ -242,7 +242,7 @@ const getImageForStudent = async (mhv, date = null) => {
     const addQuerryDate = date ? ` AND CAST (TimeSendCenter AS DATE) = '${date}'`:'';
     // Truy vấn dữ liệu
     const result =
-      await request.query(`select  ht.MaDK, hv.srcAvatar, dbo.GetEcoString(hv.HoTen) as HotenHV, dbo.GetEcoString(gv.HoTen) as HotenGV, ht.BienSo, TimeSendCenter, ht.ThoiDiemDangNhap, ht.ThoiDiemDangXuat, dbo.GetEcoString(ht.TongQuangDuong) as TongQuangDuong , cast (dbo.GetEcoString(ht.TongThoiGian) as float)/3600 as TongThoiGian ,  ht.SessionId 
+      await request.query(`select  ht.MaDK, hv.srcAvatar, dbo.GetEcoString(hv.HoTen) as HotenHV, dbo.GetEcoString(gv.HoTen) as HotenGV, ht.BienSo, TimeSendCenter, ht.ThoiDiemDangNhap, ht.ThoiDiemDangXuat, dbo.GetEcoString(ht.TongQuangDuong) as TongQuangDuong , cast (dbo.GetEcoString(ht.TongThoiGian) as float)/3600 as TongThoiGian ,  ht.SessionId, kh.Ten as TenKH
       from HanhTrinhTuEtm ht
           left join HocVienTH hv on hv.MaDK = ht.MaDK
           left join KhoaHoc kh on  kh.ID = hv.IDKhoaHoc 

@@ -348,23 +348,25 @@ const botTelegram = async (app) => {
                   e?.MaDK
                 }</b></code>\n<i>Họ Tên Học Viên:</i> <b>${
                   e?.HotenHV
+                }</b></code>\n<i>Khóa học:</i> <b>${
+                  e?.TenKH
                 }</b>\n<i>Biển Số:</i> <b>${
                   e?.BienSo
                 }</b>\n<i>Họ Tên Giáo Viên:</i> <b>${
                   e?.HotenGV
-                }</b>\n<i>Tổng QĐ:</i> <b>${
+                }</b>\n<i>Tổng Quãng Đường:</i> <b>${
                   e?.TongQuangDuong
                     ? parseFloat(e.TongQuangDuong).toFixed(2)
                     : ""
                 } Km</b>\n<i>Tổng Thời Gian:</i> <b>${
                   e?.TongThoiGian ? parseFloat(e.TongThoiGian).toFixed(2) : ""
-                } Giờ</b>\n<i>Thời điểm ĐN: </i><b>${
+                } Giờ</b>\n<i>Thời điểm Đăng Nhập: </i><b>${
                   e?.ThoiDiemDangNhap
                     ? moment(e.ThoiDiemDangNhap)
                         .utcOffset("+0000")
                         .format(constant.outputFormat)
                     : ""
-                }</b>\n<i>Thời điểm ĐX: </i><b>${
+                }</b>\n<i>Thời điểm Đăng Xuất: </i><b>${
                   e?.ThoiDiemDangXuat
                     ? moment(e.ThoiDiemDangXuat)
                         .utcOffset("+0000")
